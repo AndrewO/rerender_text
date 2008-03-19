@@ -1,0 +1,34 @@
+= Rerender Tags
+
+This extension adds two methods to Radiant's Page model that allows you to easily define tags that can render their contents twice.  The primary use for this is to add support for tags that occur before the necessary information to render them is available.
+
+== Example
+
+Say we want to add have a tag that creates a link to every header in a page.  This would be simple if the tag occurred at the end of the page.  However, most pages want this at the beginning.  The solution is to do something like this:
+
+<tt>
+<r:capture_headers>
+  <rr:table_of_contents/>
+  
+<r:h1>Foo</r:h1>
+
+...
+
+<r:h2>Bar</r:h2>
+
+...
+
+</r:capture_headers>
+</tt>
+
+(A fuller example of this same tag is laid out in spec/models/page_with_rerender_text_spec.rb.)
+
+The <tt><rr:toc/></tt> tag is in a separate namespace than the others and thus won't be evaluated until afterward.  In the <tt><r:capture_headers/></tt> tag we call
+
+<tt>rerender_text(tag.expand, :headers => headers)</tt>
+
+which sets up a new Radius context and parser to expand tags in the "rr" namespace.
+
+== Using other namespaces
+
+If you need to render more than twice, you can change the namespace used for a particular parser and context using the <tt>rerender_with_namespace(text, namespace, options)</tt> method.
