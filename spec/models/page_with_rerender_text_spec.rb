@@ -51,6 +51,8 @@ unless String.method_defined? :to_slug
 end
 
 class Page
+  attr_reader :headers
+  
   6.times do |i|
     tag "h#{i + 1}" do |tag|
       contents = tag.expand
@@ -61,15 +63,10 @@ class Page
     end
   end
   
-  desc "Pulls out all of the headers in a page"
-  tag "capture_headers" do |tag|
-    rerender_text(tag.expand, :headers => @headers)
-  end
-  
   desc "Renders the page table of contents"
   tag "toc" do |tag|
     str = "<ul id='toc'>"
-    tag.locals.headers.each do |header|
+    tag.globals.page.headers.each do |header|
       str += %{<li><a href="##{header[:id]}">#{header[:text]}</a></li>}
     end
     str += "</ul>"
@@ -85,7 +82,7 @@ describe Page, "with a more complicated rerender tag" do
 
     @page = Page.new(:title => "Test Page", :slug => "test-page", :status_id => 100, :breadcrumb => "Test Page")
     rerender_text = %{
-<r:capture_headers>
+<r:rerender>
   <rr:toc/>
 
 <r:h1>Foo</r:h1>
@@ -113,7 +110,7 @@ magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
 consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-</r:capture_headers>
+</r:rerender>
 }
     @page.parts << PagePart.new(:name => "body", :content => rerender_text, :filter_id => "Textile")
     @page.save!

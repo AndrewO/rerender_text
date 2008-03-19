@@ -1,11 +1,22 @@
 module RerenderText
   include Radiant::Taggable
+  
+  desc %{
+    Use this to render the contained content twice
     
-  def rerender_text(text, options)
+    Usage:
+    <pre><code><r:rerender [prefix="rr"]>...</r:rerender></code></pre>
+  }
+  tag "rerender" do |tag|
+    prefix = tag.attr["prefix"] || "rr"
+    rerender_text_with_prefix(tag.expand, prefix)
+  end
+  
+  def rerender_text(text, options = {})
     rerender_text_with_prefix(text, "rr", options)
   end
   
-  def rerender_text_with_prefix(text, prefix, options)
+  def rerender_text_with_prefix(text, prefix, options = {})
     _context = RerenderContext.new(self, text, options)
     _parser = Radius::Parser.new(_context, :tag_prefix => prefix)
     new_text = _parser.parse(text)

@@ -32,3 +32,24 @@ which sets up a new Radius context and parser to expand tags in the "rr" namespa
 == Using other namespaces
 
 If you need to render more than twice, you can change the namespace used for a particular parser and context using the <tt>rerender_with_namespace(text, namespace, options)</tt> method.
+
+== <r:rerender>
+
+This extension includes one tag that acts as a basic rerenderer.  Sometimes the tag that contains a rerenderable tag doesn't need to do anything but call it with the correct namespace due to the fact that tags may have side-effects.  For example, the example above can be
+
+<tt>
+<r:rerender>
+  <rr:table_of_contents/>
+  
+<r:h1>Foo</r:h1>
+
+...
+
+<r:h2>Bar</r:h2>
+
+...
+
+</r:rerender>
+</tt>
+
+...as long as the <r:hx> tags add effect an instance variable of the page that's accessible to tag.globals.page.
